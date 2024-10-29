@@ -1,0 +1,19 @@
+name: Dev Deploy
+
+on:
+    push:
+        branches:
+            - dev
+
+permissions:
+    id-token: write
+    contents: read
+
+jobs:
+    terraform:
+        uses: ./.github/workflows/terraform,yml
+        with:
+            environment: dev
+            aws-assume-tole-arn: arn:aws:iam::719836617769:role/GitHub_Actions
+            aws-region: sa-east-2
+            aws-bucket-statefile: "s3.gregorian"
