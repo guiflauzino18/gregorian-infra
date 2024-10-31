@@ -47,7 +47,7 @@ jobs:
             - name: Terraform Destroy
               if: inputs.destroy == true
               id: terraform-destroy
-              run: cd infra &&
+              run: cd infra/env/${{inputs.environment}} &&
                   terraform destroy -var-file="./terraform.tfvars" -auto-approve
 
             - name: Terraform Init
