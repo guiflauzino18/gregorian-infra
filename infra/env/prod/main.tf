@@ -272,4 +272,3 @@ resource "aws_autoscaling_policy" "down" {
   cooldown = "300"
   policy_type = "SimpleScaling"
 }
-
