@@ -11,7 +11,7 @@ permissions:
 
 jobs:
     terraform:
-        uses: ./.github/workflows/terraform,yml
+        uses: ./.github/workflows/terraform.yml
         with:
             environment: prod
             aws-assume-tole-arn: arn:aws:iam::719836617769:role/GitHub_Actions

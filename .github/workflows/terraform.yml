@@ -3,16 +3,16 @@ name: "Deploy Infra Gregorian"
 on:
     workflow_call:
         inputs:
-            environment:
+            environment: #Variavel que define o tipo de ambiente. OBS o valor deve ser dev prod ou nome e outra pasta que estiver dentro de /infra
                 type: string
                 required: true
-            aws-assume-tole-arn:
+            aws-assume-tole-arn: #ARN da Role que permite o GitHub fazer chamadas à AWS
                 type: string
                 required: true
-            aws-region:
+            aws-region: #Região da AWS que o GitHub Actions atuará
                 type: string
                 required: true
-            aws-bucket-statefile:
+            aws-bucket-statefile: # Nome do Bucket que guardará o statefile do terraform
                 type: string
                 required: true
 
@@ -25,7 +25,7 @@ jobs:
 
         steps:
             - name: Checkout Code
-              uses: action/checkout@v3
+              uses: actions/checkout@v4
 
             - name: Setup Terraform
               uses: hashicorp/setup-terraform@v3
@@ -36,12 +36,12 @@ jobs:
               uses: aws-actions/configure-aws-credentials@v4
               with:
                     role-to-assume: ${{inputs.aws-assume-tole-arn}}
-                    role-session-name: GitHub_Actions_Deploy_Gregorian
+                    role-session-name: GitHub_Actions_Deploy_Gregorian_Infra
                     aws-region: ${{inputs.aws-region}}
 
             - name: Terraform Init
               run: |
-                cd infra/dev/${{inputs.environment}} && terraform init \
+                cd infra/env/${{inputs.environment}} && terraform init \ 
                   -backend-config="bucket=${{inputs.aws-bucket-statefile}}"  \
                   -backend-config=key="key=${{github.event.repository.name}}" \
                   -backend-config="region=${{inputs.aws-region}}"
@@ -52,7 +52,7 @@ jobs:
             - name: Terraform Plan
               run: cd infra/env/${{inputs.environment}} && 
                 terraform workspace select ${{inputs.environment}} || terraform workspace new ${{inputs.environment}} &&
-                terraform plan -var-file="./${{inputs.environment}}/terraform.tfvars" -out=${{inputs.environment}}.plan
+                terraform plan -var-file="./terraform.tfvars" -out=${{inputs.environment}}.plan
 
             - name: Terraform Apply
               run: cd infra/env/${{inputs.environment}} &&
