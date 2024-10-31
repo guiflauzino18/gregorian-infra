@@ -40,8 +40,7 @@ jobs:
                     aws-region: ${{inputs.aws-region}}
 
             - name: Terraform Init
-              run: |
-                cd infra/env/${{inputs.environment}} && terraform init \ 
+              run: cd infra/env/${{inputs.environment}} && terraform init \ 
                   -backend-config="bucket=${{inputs.aws-bucket-statefile}}"  \
                   -backend-config="key=${{github.event.repository.name}}" \
                   -backend-config="region=${{inputs.aws-region}}" \
