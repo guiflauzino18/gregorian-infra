@@ -44,14 +44,12 @@ jobs:
                     aws-region: ${{inputs.aws-region}}
 
             - name: Terraform Init
-              if: inputs.destroy != true
               run: cd infra/env/${{inputs.environment}} && terraform init 
                   -backend-config="bucket=${{inputs.aws-bucket-statefile}}"  
                   -backend-config="key=${{github.event.repository.name}}" 
                   -backend-config="region=${{inputs.aws-region}}" 
 
             - name: Terraform Validate
-              if: inputs.destroy != true
               run: terraform validate
 
               #Se destroy for true executa terraform destroy
