@@ -43,13 +43,6 @@ jobs:
                     role-session-name: GitHub_Actions_Deploy_Gregorian_Infra
                     aws-region: ${{inputs.aws-region}}
 
-            #Se destroy for true executa terraform destroy
-            - name: Terraform Destroy
-              if: inputs.destroy == true
-              id: terraform-destroy
-              run: cd infra/env/${{inputs.environment}} &&
-                  terraform destroy -var-file="./terraform.tfvars" -auto-approve
-
             - name: Terraform Init
               if: inputs.destroy != true
               run: cd infra/env/${{inputs.environment}} && terraform init 
@@ -60,6 +53,13 @@ jobs:
             - name: Terraform Validate
               if: inputs.destroy != true
               run: terraform validate
+
+              #Se destroy for true executa terraform destroy
+            - name: Terraform Destroy
+              if: inputs.destroy == true
+              id: terraform-destroy
+              run: cd infra/env/${{inputs.environment}} &&
+                terraform destroy -var-file="./terraform.tfvars" -auto-approve
 
             - name: Terraform Plan
               if: inputs.destroy != true
