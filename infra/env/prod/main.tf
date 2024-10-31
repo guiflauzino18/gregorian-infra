@@ -129,6 +129,7 @@ resource "aws_vpc_security_group_ingress_rule" "allowHttpIn" {
   cidr_ipv4 = "0.0.0.0/0"
   from_port = 443
   ip_protocol = "tcp"
+  to_port = "443"
 }
 
 #################### RDS POLICY
@@ -198,7 +199,7 @@ resource "aws_lb_target_group" "this" {
 resource "aws_lb_listener" "this" {
   load_balancer_arn = aws_lb.this.arn
   port = "443"
-  protocol = "tcp"
+  protocol = "HTTP"
   default_action {
     type = "forward"
     target_group_arn = aws_lb_target_group.this.arn

@@ -13,7 +13,7 @@ subnet-c-cidr-block = "172.28.2.0/24"
 subnet-a-availability-zone = "us-east-2a"
 subnet-b-availability-zone = "us-east-2b"
 subnet-c-availability-zone = "us-east-2c"
-ssh-src-cidr = ["177.92.204.11/32"]
+ssh-src-cidr = ["177.92.204.11/32","186.193.158.49/32"]
 
 #EC2
 aws-key-name = "GregorianKeyPair"
