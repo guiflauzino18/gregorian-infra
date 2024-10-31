@@ -78,7 +78,7 @@ resource "aws_route_table_association" "rta-subnet-c" {
 
 # SG FOR INSTANCES
 resource "aws_security_group" "SGForInstances" {
-  name = "sg-for-instances"
+  name = "for-instances"
   description = "Security Group para Instancias"
   vpc_id = aws_vpc.this.id
   tags = var.tags
@@ -86,14 +86,14 @@ resource "aws_security_group" "SGForInstances" {
 
 # SG FOR LOADBALANCER
 resource "aws_security_group" "SGForLoadBalancer" {
-  name = "sg-for-loadbalancer"
+  name = "for-loadbalancer"
   description = "Security Group para o Load Balancer"
   vpc_id = aws_vpc.this.id
   tags = var.tags
 }
 # SG FOR RDS
 resource "aws_security_group" "SGForRDS" {
-  name = "sg-for-rds"
+  name = "for-rds"
   description = "Security Group para o RDS"
   vpc_id = aws_vpc.this.id
   tags = var.tags
@@ -188,7 +188,7 @@ resource "aws_lb" "this" {
 resource "aws_lb_target_group" "this" {
   name = "tg-gregorian"
   port = 80
-  protocol = "http"
+  protocol = "HTTP"
   target_type = "instance" #Instance quando usado junto cm autoscaling
   vpc_id = aws_vpc.this.id
   tags = merge({"name" = "tg-gregorian",}, var.tags)
