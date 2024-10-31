@@ -50,7 +50,7 @@ jobs:
 
             - name: Terraform Plan
               run: cd infra/env/${{inputs.environment}} && 
-                terraform workspace select ${{inputs.environment}} -or-create &&
+                terraform workspace select ${{inputs.environment}} -or-create=true &&
                 terraform plan -var-file="./terraform.tfvars" -out=${{inputs.environment}}.plan
 
             - name: Terraform Apply
