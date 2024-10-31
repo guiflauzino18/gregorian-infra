@@ -178,7 +178,7 @@ resource "aws_lb" "this" {
   internal = false 
   load_balancer_type = "application"
   security_groups = [aws_security_group.SGForLoadBalancer.id]
-  subnets = [ aws_subnet.subnet_a.id,aws_subnet.subnet_b.id, aws_subnet.subnet_c ]
+  subnets = [ aws_subnet.subnet_a.id,aws_subnet.subnet_b.id, aws_subnet.subnet_c.id ]
   enable_deletion_protection = false
   tags = var.tags
 }

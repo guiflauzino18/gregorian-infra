@@ -15,6 +15,10 @@ on:
             aws-bucket-statefile: # Nome do Bucket que guardará o statefile do terraform
                 type: string
                 required: true
+            destroy:
+                type: boolean
+                required: true
+
 
 jobs:
     terraform:
@@ -39,20 +43,32 @@ jobs:
                     role-session-name: GitHub_Actions_Deploy_Gregorian_Infra
                     aws-region: ${{inputs.aws-region}}
 
+            #Se destroy for true executa terraform destroy
+            - name: Terraform Destroy
+              if: inputs.destroy == true
+              id: terraform-destroy
+              run: cd infra &&
+                terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }} &&
+                terraform destroy -var-file="./envs/${{ inputs.environment }}/terraform.tfvars" -auto-approve
+
             - name: Terraform Init
+              if: inputs.destroy != true
               run: cd infra/env/${{inputs.environment}} && terraform init 
                   -backend-config="bucket=${{inputs.aws-bucket-statefile}}"  
                   -backend-config="key=${{github.event.repository.name}}" 
                   -backend-config="region=${{inputs.aws-region}}" 
 
             - name: Terraform Validate
+              if: inputs.destroy != true
               run: terraform validate
 
             - name: Terraform Plan
+              if: inputs.destroy != true
               run: cd infra/env/${{inputs.environment}} &&
                 terraform plan -var-file="./terraform.tfvars" -out=${{inputs.environment}}.plan
 
             - name: Terraform Apply
+              if: inputs.destroy != true
               run: cd infra/env/${{inputs.environment}} &&
                 terraform apply "${{inputs.environment}}.plan"
 
