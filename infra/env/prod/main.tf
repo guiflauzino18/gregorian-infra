@@ -78,7 +78,7 @@ resource "aws_route_table_association" "rta-subnet-c" {
 
 # SG FOR INSTANCES
 resource "aws_security_group" "SGForInstances" {
-  name = "SGForInstances"
+  name = "sg-for-instances"
   description = "Security Group para Instancias"
   vpc_id = aws_vpc.this.id
   tags = var.tags
@@ -86,14 +86,14 @@ resource "aws_security_group" "SGForInstances" {
 
 # SG FOR LOADBALANCER
 resource "aws_security_group" "SGForLoadBalancer" {
-  name = "SGForLoadBalancer"
+  name = "sg-for-loadbalancer"
   description = "Security Group para o Load Balancer"
   vpc_id = aws_vpc.this.id
   tags = var.tags
 }
 # SG FOR RDS
 resource "aws_security_group" "SGForRDS" {
-  name = "SGForRDS"
+  name = "sg-for-rds"
   description = "Security Group para o RDS"
   vpc_id = aws_vpc.this.id
   tags = var.tags
@@ -168,13 +168,13 @@ resource "aws_db_instance" "this" {
 }
 
 resource "aws_db_subnet_group" "this" {
-  name = "GregorianSubnets"
+  name = "gregorian-subnets"
   subnet_ids = [aws_subnet.subnet_a.id, aws_subnet.subnet_b.id, aws_subnet.subnet_c.id]
 }
 
 ###################LOAD BALANCER
 resource "aws_lb" "this" {
-  name = "Gregorian Load Balancer"
+  name = "gregorian-load-balancer"
   internal = false 
   load_balancer_type = "application"
   security_groups = [aws_security_group.SGForLoadBalancer.id]
@@ -210,7 +210,7 @@ resource "aws_lb_listener" "this" {
 ###########AUTO SCALING
 #LAUNCH TEMPLATE
 resource "aws_launch_template" "this" {
-  name = "GregorianImage"
+  name = "gregorian-image"
   image_id = var.image-id
   instance_type = var.as-instance-type
   key_name = var.aws-key-name
@@ -224,7 +224,7 @@ resource "aws_launch_template" "this" {
 
 #AUTOSCALING GROUP
 resource "aws_autoscaling_group" "this" {
-  name = "GregorianAutoScalingGroup"
+  name = "gregorian-autoScaling-group"
   max_size = var.max-size
   min_size = var.min-size
   desired_capacity = var.desired-capacity
