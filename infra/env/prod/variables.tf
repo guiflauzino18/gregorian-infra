@@ -64,4 +64,3 @@ variable "desired-capacity" {}
 variable "asg-health-check-type" {}
 variable "image-id" {}
 variable "as-instance-type" {}
-variable "as-user-data" {}
