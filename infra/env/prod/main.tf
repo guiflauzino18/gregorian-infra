@@ -119,7 +119,7 @@ resource "aws_vpc_security_group_ingress_rule" "AllowSSH" {
 #PERMITE TODO TRÁFEGO DE SAÍDA
 resource "aws_vpc_security_group_egress_rule" "AllowAllEgress" {
   security_group_id = aws_security_group.SGForInstances.id
-  cidr_ipv4 = var.vpc-cidr-block
+  cidr_ipv4 = "0.0.0.0/0"
   ip_protocol = "-1" #Todas as portas
 }
 
@@ -228,7 +228,7 @@ resource "aws_autoscaling_group" "this" {
   name = "gregorian-autoScaling-group"
   max_size = var.max-size
   min_size = var.min-size
-  desired_capacity = var.desired-capacity
+  desired_capacity = var.desired-capacity #Capacidade desejada = ao menos 2
   health_check_grace_period = 300
   health_check_type = var.asg-health-check-type
   vpc_zone_identifier = [ aws_subnet.subnet_a.id, aws_subnet.subnet_b.id, aws_subnet.subnet_c.id ]
