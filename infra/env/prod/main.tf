@@ -216,6 +216,7 @@ resource "aws_launch_template" "this" {
   instance_type = var.as-instance-type
   key_name = var.aws-key-name
   user_data = filebase64("${path.module}/userData.sh")
+  update_default_version = true
   tags = merge({"Resource" = "gregorian-template"}, var.tags)
   network_interfaces {
     security_groups = [aws_security_group.SGForInstances.id]
