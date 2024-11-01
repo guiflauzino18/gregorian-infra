@@ -29,28 +29,28 @@ jobs:
               shell: bash
 
         steps:
-            - name: Checkout Code
+            - name: Checkout Code #Checa o código
               uses: actions/checkout@v4
 
-            - name: Setup Terraform
+            - name: Setup Terraform # Instala Terraform
               uses: hashicorp/setup-terraform@v3
               with:
                 terraform_version: 1.9.8
 
-            - name: Configure AWS Credentials
+            - name: Configure AWS Credentials #Configura conexão com AWS
               uses: aws-actions/configure-aws-credentials@v4
               with:
                     role-to-assume: ${{inputs.aws-assume-tole-arn}}
                     role-session-name: GitHub_Actions_Deploy_Gregorian_Infra
                     aws-region: ${{inputs.aws-region}}
 
-            - name: Terraform Init
+            - name: Terraform Init #Entra na pasta dev ou prod de acordo com a o valor da variavel passada e executa terraform init 
               run: cd infra/env/${{inputs.environment}} && terraform init 
                   -backend-config="bucket=${{inputs.aws-bucket-statefile}}"  
                   -backend-config="key=${{github.event.repository.name}}" 
                   -backend-config="region=${{inputs.aws-region}}" 
 
-            - name: Terraform Validate
+            - name: Terraform Validate # Executa terraform validate
               run: terraform validate
 
               #Se destroy for true executa terraform destroy
@@ -60,7 +60,7 @@ jobs:
               run: cd infra/env/${{inputs.environment}} &&
                 terraform destroy -var-file="./terraform.tfvars" -auto-approve
 
-            - name: Terraform Plan
+            - name: Terraform Plan #Executa terraform plan se destroy != true
               if: inputs.destroy != true
               run: cd infra/env/${{inputs.environment}} &&
                 terraform plan -var-file="./terraform.tfvars" -out=${{inputs.environment}}.plan

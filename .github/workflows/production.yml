@@ -1,6 +1,6 @@
 name: Production Deploy
 
-on:
+on: #Será executado quando git push na branch prod for rodado
     push:
         branches:
             - prod
@@ -10,11 +10,11 @@ permissions:
     contents: read
 
 jobs:
-    terraform:
+    terraform: #Chama o arquivo terraform.yml e passa o valor das variáveis necessárias
         uses: ./.github/workflows/terraform.yml
         with:
-            environment: prod
-            aws-assume-tole-arn: "arn:aws:iam::719836617769:role/GitHub_Actions"
-            aws-region: "us-east-2"
-            aws-bucket-statefile: "s3.gregorian"
-            destroy: false
+            environment: prod #valor tem que ser o mesmo nome da pasta dentro de infra/env/, pois esse valor é usado para entrar na pasta
+            aws-assume-tole-arn: "arn:aws:iam::719836617769:role/GitHub_Actions" #arn da role para conectar na AWS
+            aws-region: "us-east-2" #Região da AWS que será feito conexão
+            aws-bucket-statefile: "s3.gregorian" #Nome do bucket que guardará o statefile do terraform
+            destroy: false #Quando quiser destruir o ambiente
