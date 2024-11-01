@@ -1,5 +1,6 @@
 name: "Deploy Infra Gregorian"
 
+# Variáveis necessárias para execução.
 on:
     workflow_call:
         inputs:
@@ -15,17 +16,17 @@ on:
             aws-bucket-statefile: # Nome do Bucket que guardará o statefile do terraform
                 type: string
                 required: true
-            destroy:
+            destroy: # Variavel quando quisermos fazer o destroy
                 type: boolean
                 required: true
 
-
+#Jobs que serão executadas
 jobs:
     terraform:
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-latest #SO que será usado para execução
         defaults:
             run:
-                shell: bash
+              shell: bash
 
         steps:
             - name: Checkout Code
