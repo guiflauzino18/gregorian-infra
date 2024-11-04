@@ -14,12 +14,6 @@ jobs:
         uses: ./.github/workflows/terraform.yml
         with:
             environment: dev
-<<<<<<< HEAD
             aws-assume-tole-arn: "${{secrets.AWS_ROLE_ARN}}"
             aws-region: "${{AWS_REGION}}"
             aws-bucket-statefile: "${{secrets.AWS_BUCKET}}"
-=======
-            aws-assume-tole-arn: <arn>
-            aws-region: <region>
-            aws-bucket-statefile: "<bucket>"
->>>>>>> 7cf6c83982098d979495601206463e9450454089
