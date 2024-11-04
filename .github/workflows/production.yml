@@ -14,7 +14,7 @@ jobs:
         uses: ./.github/workflows/terraform.yml
         with:
             environment: prod
-            aws-assume-tole-arn: "arn:aws:iam::719836617769:role/GitHub_Actions"
-            aws-region: "us-east-2"
-            aws-bucket-statefile: "s3.gregorian"
+            aws-assume-tole-arn: "<arn>"
+            aws-region: "<region>"
+            aws-bucket-statefile: "<bucket>"
             destroy: true
