@@ -13,8 +13,16 @@ jobs:
     terraform:
         uses: ./.github/workflows/terraform.yml
         with:
+<<<<<<< HEAD
             environment: prod
             aws-assume-tole-arn: ${{secrets.AWS_ROLE_ARN}}
             aws-region: "${{secrets.AWS_REGION}}"
             aws-bucket-statefile: "${{secrets.AWS_BUCKET}}"
             destroy: true
+=======
+            environment: prod #valor tem que ser o mesmo nome da pasta dentro de infra/env/, pois esse valor é usado para entrar na pasta
+            aws-assume-tole-arn: "<arn>" #arn da role para conectar na AWS
+            aws-region: "<region>" #Região da AWS que será feito conexão
+            aws-bucket-statefile: "bucket" #Nome do bucket que guardará o statefile do terraform
+            destroy: false #Quando quiser destruir o ambiente
+>>>>>>> 7cf6c83982098d979495601206463e9450454089

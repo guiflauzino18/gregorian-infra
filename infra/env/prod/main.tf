@@ -45,7 +45,7 @@ resource "aws_route_table" "this" {
   vpc_id = aws_vpc.this.id
   tags = var.tags
 
-  #ROTA DE REDE LOCAL INTERNET
+  #ROTA DE REDE LOCAL
   route {
     cidr_block = var.vpc-cidr-block
     gateway_id = "local"
