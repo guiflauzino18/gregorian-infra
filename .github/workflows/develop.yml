@@ -17,3 +17,4 @@ jobs:
             aws-assume-tole-arn: "${{secrets.AWS_ROLE_ARN}}"
             aws-region: "${{AWS_REGION}}"
             aws-bucket-statefile: "${{secrets.AWS_BUCKET}}"
+            destroy: false

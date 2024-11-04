@@ -132,6 +132,14 @@ resource "aws_vpc_security_group_ingress_rule" "allowHttpIn" {
   to_port = "443"
 }
 
+resource "aws_vpc_security_group_ingress_rule" "allowTomcatIn" {
+  security_group_id = aws_security_group.SGForLoadBalancer.id
+  cidr_ipv4 = "0.0.0.0/0"
+  from_port = 8080
+  ip_protocol = "tcp"
+  to_port = "8080"
+}
+
 #################### RDS POLICY
 resource "aws_vpc_security_group_ingress_rule" "allowMysql" {
   security_group_id = aws_security_group.SGForRDS.id
@@ -188,8 +196,6 @@ resource "aws_lb" "this" {
 #Esse Target Group será usado também no autoscalink
 resource "aws_lb_target_group" "this" {
   name = "tg-gregorian"
-  port = 80
-  protocol = "HTTP"
   target_type = "instance" #Instance quando usado junto cm autoscaling
   vpc_id = aws_vpc.this.id
   tags = merge({"name" = "tg-gregorian",}, var.tags)
@@ -207,8 +213,134 @@ resource "aws_lb_listener" "this" {
   depends_on = [ aws_lb_target_group.this ]
 }
 
+resource "aws_lb_listener" "TomCat8080" {
+  load_balancer_arn = aws_lb.this.arn
+  port = "8080"
+  protocol = "HTTP"
+  default_action {
+    type = "forward"
+    target_group_arn = aws_lb_target_group.this.arn
+  }
+  depends_on = [ aws_lb_target_group.this ]
+}
+
 
 ###########AUTO SCALING
+#CRIA  ARQUIVO DOCKER COMPOSE
+resource "local_file" "docker-coompose.yml" {
+  filename = "${path.module}/docker-coompose.yml"
+  content  = <<-EOF
+    services:
+    megasocial-app:
+    image: 719836617769.dkr.ecr.us-east-2.amazonaws.com/megasocial-app:latest
+    container_name: megasocial-app
+    restart: always
+    environment: 
+      - MYSQL_IP=${aws_db_instance.this.address}
+    ports: 
+      - 8080:8080
+    network_mode: "host"
+    volumes:
+      - vol-megasocial:/megasocial
+
+   volumes:
+    vol-megasocial:
+  EOF
+}
+
+#ENVIA ARQUIVO DOCKER-COMPOSE.YML PARA O BUCKET S3
+resource "aws_s3_object" "docker-compose.yml" {
+  bucket = var.bucket  
+  key    = "docker-compose.yml" 
+  source = "./docker-compose.yml" 
+  acl    = "private"
+}
+
+#CRIA ARQUIVO USERDATA.SH
+resource "local_file" "userData.sh" {
+  filename = "${path.module}/userData.sh"
+  content = <<-EOF
+    #!/bin/bash
+
+    #Instala Docker
+    # Add Docker's official GPG key:
+    sudo apt-get update
+    sudo apt-get install -y ca-certificates curl
+    sudo install -m 0755 -d /etc/apt/keyrings
+    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+    sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+    # Add the repository to Apt sources:
+    echo \
+      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+      $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+      sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    sudo apt-get update
+
+    sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+    # Loga docker no ECR
+    aws ecr get-login-password --region ${var.aws-region} | docker login --username AWS --password-stdin ${var.aws-acount-id}.dkr.ecr.${var.aws-region}.amazonaws.com
+
+    #Instala Mysql Client
+    sudo apt install -y mysql-client-core-8.0
+
+    #Configura Docker Compose
+    mkdir /gregorian
+    cd /gregorian
+    aws s3 cp s3://s3.gregorian/docker-compose.yml .
+    docker compose up -d
+  EOF
+}
+
+#POLÍTICAS EC2 PARA ACESSO AO BUCKET S3
+#ROLE PERMITNDO EC2 ASSUMIR ESTA ROLE
+resource "aws_iam_role" "role-ec2-access-s3" {
+  name = "ec2-access-s3"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action    = "sts:AssumeRole"
+        Effect    = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+#POLÍTICA PARA ACESSAR O BUCKET S3
+resource "aws_iam_policy" "ec2-access-s3-policy" {
+  name        = "ec2-access-s3-policy"
+  description = "Permissão para acessar o bucket S3"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action   = ["s3:GetObject"]
+        Effect   = "Allow"
+        Resource = "arn:aws:s3:::s3.gregorian/*"
+      }
+    ]
+  })
+}
+
+#ANEXA A POLÍTICA ACIMA À ROLE
+resource "aws_iam_role_policy_attachment" "s3_access_attachment" {
+  role       = aws_iam_role.role-ec2-access-s3.name
+  policy_arn = aws_iam_policy.ec2-access-s3-policy.arn
+}
+
+#CRIA UM INSTANCE PROFILE QUE SERÁ ANEXADO À LAUCH TEMPLATE
+resource "aws_iam_instance_profile" "this" {
+  name = "ec2_instance_profile"
+  role = aws_iam_role.role-ec2-access-s3.name
+}
+
 #LAUNCH TEMPLATE
 resource "aws_launch_template" "this" {
   name = "gregorian-image"
@@ -221,6 +353,9 @@ resource "aws_launch_template" "this" {
   network_interfaces {
     security_groups = [aws_security_group.SGForInstances.id]
     associate_public_ip_address = true
+  }
+  iam_instance_profile {
+    arn = aws_iam_instance_profile.this.arn
   }
 }
 

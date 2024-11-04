@@ -102,3 +102,12 @@ variable "image-id" {
 variable "as-instance-type" {
   type = string
 }
+
+#S3
+variable "bucket" {
+  type = string
+}
+
+variable "aws-acount-id" {
+  type = string
+}
