@@ -232,24 +232,25 @@ resource "aws_lb_listener" "TomCat8080" {
 resource "local_file" "docker-coompose" {
   filename = "${path.module}/docker-compose.yml"
   content  = <<-EOF
-    services:
+  services:
     megasocial-app:
     image: 719836617769.dkr.ecr.us-east-2.amazonaws.com/gregorian-api:latest
     container_name: gregorian-api
     restart: always
     environment: 
-      - MYSQL_IP=${aws_db_instance.this.address}
-      - MYSQL_USERNAME=${var.rds-db-username}
-      - MYSQL_PASSWORD=${var.rds-db-password}
+    - MYSQL_IP=${aws_db_instance.this.address}
+    - MYSQL_USERNAME=${var.rds-db-username}
+    - MYSQL_PASSWORD=${var.rds-db-password}
     ports: 
       - 8080:8080
     network_mode: "host"
     volumes:
       - vol-gregorian-api:/gregorian
 
-   volumes:
-    vol-gregorian-api
+  volumes:
+   vol-gregorian-api
   EOF
+  depends_on = [ aws_db_instance.this ]
 }
 
 #ENVIA ARQUIVO DOCKER-COMPOSE.YML PARA O BUCKET S3
@@ -296,6 +297,15 @@ resource "local_file" "userData" {
     aws s3 cp s3://s3.gregorian/docker-compose.yml .
     docker compose up -d
   EOF
+}
+
+#ENVIA ARQUIVO USERDATA.SH PARA O BUCKET S3
+resource "aws_s3_object" "usedataToS3" {
+  bucket = var.bucket
+  key    = "userData.sh" 
+  source = "./userData.sh" 
+  acl    = "private"
+  depends_on = [ local_file.userData ]
 }
 
 #POLÍTICAS EC2 PARA ACESSO AO BUCKET S3
