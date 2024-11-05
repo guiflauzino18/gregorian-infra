@@ -252,7 +252,7 @@ resource "local_file" "docker-coompose" {
 
 #ENVIA ARQUIVO DOCKER-COMPOSE.YML PARA O BUCKET S3
 resource "aws_s3_object" "docker-compose" {
-  bucket = var.bucket  
+  bucket = var.bucket
   key    = "docker-compose.yml" 
   source = "./docker-compose.yml" 
   acl    = "private"

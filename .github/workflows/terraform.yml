@@ -69,7 +69,7 @@ jobs:
                 -var="rds-db-name=${{secrets.DB_NAME}}" 
                 -var="rds-db-username=${{secrets.DB_USERNAME}}" 
                 -var="rds-db-password=${{secrets.DB_PASSWORD}}" 
-                -var="bucket=${{secrets.AWS_BUCKET}}" 
+                -var="bucket=${{inputs.aws-bucket-statefile}}"
                 -out=${{inputs.environment}}.plan 
                 #secrets são definidas no github
 
