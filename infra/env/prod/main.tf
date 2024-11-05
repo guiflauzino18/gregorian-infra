@@ -258,6 +258,7 @@ resource "aws_s3_object" "docker-compose" {
   key    = "docker-compose.yml" 
   source = "./docker-compose.yml" 
   acl    = "private"
+  depends_on = [ local_file.docker-coompose ]
 }
 
 #CRIA ARQUIVO USERDATA.SH
