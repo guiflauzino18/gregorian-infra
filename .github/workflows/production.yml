@@ -18,3 +18,5 @@ jobs:
             aws-region: "us-east-2"
             aws-bucket-statefile: "s3.gregorian"
             destroy: false
+        secrets: inherit
+            
