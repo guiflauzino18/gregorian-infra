@@ -63,14 +63,14 @@ jobs:
             - name: Terraform Plan #Executa terraform plan se destroy != true
               if: inputs.destroy != true
               run: cd infra/env/${{inputs.environment}} &&
-                terraform plan -var-file="./terraform.tfvars" \
-                -var="aws-region=${{inputs.aws-region}}" \
-                -var="aws-acount-id=${{secrets.AWS_ACCOUNT_ID}}" \
-                -var="rds-db-name=${{secrets.DB_NAME}}" \
-                -var="rds-db-username=${{secrets.DB_USERNAME}}" \
-                -var="rds-db-password=${{secrets.DB_PASSWORD}}" \
-                -var="bucket=${{secrets.AWS_BUCKET}}" \
-                -out=${{inputs.environment}}.plan \
+                terraform plan -var-file="./terraform.tfvars" 
+                -var="aws-region=${{inputs.aws-region}}" 
+                -var="aws-acount-id=${{secrets.AWS_ACCOUNT_ID}}" 
+                -var="rds-db-name=${{secrets.DB_NAME}}" 
+                -var="rds-db-username=${{secrets.DB_USERNAME}}" 
+                -var="rds-db-password=${{secrets.DB_PASSWORD}}" 
+                -var="bucket=${{secrets.AWS_BUCKET}}" 
+                -out=${{inputs.environment}}.plan 
                 #secrets são definidas no github
 
             - name: Terraform Apply
