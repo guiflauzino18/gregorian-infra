@@ -4,7 +4,7 @@ tags = {
     environment = "prod"
 }
 environment = "prod"
-aws-region = "us-east-2"
+# aws-region = "us-east-2"
 
 #NETWORK
 vpc-cidr-block = "172.28.0.0/16"
