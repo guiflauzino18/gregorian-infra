@@ -198,6 +198,7 @@ resource "aws_lb_target_group" "this" {
   name = "tg-gregorian"
   target_type = "instance" #Instance quando usado junto cm autoscaling
   port = 8080
+  protocol = "HTTP"
   vpc_id = aws_vpc.this.id
   tags = merge({"name" = "tg-gregorian",}, var.tags)
 }
