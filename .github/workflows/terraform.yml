@@ -7,7 +7,7 @@ on:
             environment: #Variavel que define o tipo de ambiente. OBS o valor deve ser dev prod ou nome e outra pasta que estiver dentro de /infra
                 type: string
                 required: true
-            aws-assume-tole-arn: #ARN da Role que permite o GitHub fazer chamadas à AWS
+            aws-assume-role-arn: #ARN da Role que permite o GitHub fazer chamadas à AWS
                 type: string
                 required: false
             aws-region: #Região da AWS que o GitHub Actions atuará
@@ -40,15 +40,15 @@ jobs:
             - name: Configure AWS Credentials #Configura conexão com AWS
               uses: aws-actions/configure-aws-credentials@v4
               with:
-                    role-to-assume: ${{secrets.AWS_ROLE_ARN}} #${inputs.aws-assume-tole-arn}
+                    role-to-assume: ${{inputs.aws-assume-tole-arn}}
                     role-session-name: GitHub_Actions_Deploy_Gregorian_Infra
-                    aws-region: "us-east-2" #${inputs.aws-region}}
+                    aws-region: ${{inputs.aws-region}}
 
             - name: Terraform Init #Entra na pasta dev ou prod de acordo com a o valor da variavel passada e executa terraform init 
               run: cd infra/env/${{inputs.environment}} && terraform init 
                   -backend-config="bucket=${{inputs.aws-bucket-statefile}}"  
                   -backend-config="key=${{inputs.environment}}/${{github.event.repository.name}}"
-                  -backend-config="region=${{secrets.AWS_REGION}}"
+                  -backend-config="region=${{inputs.aws-region}}"
 
             - name: Terraform Validate # Executa terraform validate
               run: terraform validate
@@ -64,7 +64,7 @@ jobs:
               if: inputs.destroy != true
               run: cd infra/env/${{inputs.environment}} &&
                 terraform plan -var-file="./terraform.tfvars" \
-                -var="aws-region=${{secrets.AWS_REGION}}" \
+                -var="aws-region=${{inputs.aws-region}}" \
                 -var="aws-acount-id=${{secrets.AWS_ACCOUNT_ID}}" \
                 -var="rds-db-name=${{secrets.DB_NAME}}" \
                 -var="rds-db-username=${{secrets.DB_USERNAME}}" \
