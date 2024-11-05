@@ -227,7 +227,7 @@ resource "aws_lb_listener" "TomCat8080" {
 
 ###########AUTO SCALING
 #CRIA  ARQUIVO DOCKER COMPOSE
-resource "local_file" "docker-coompose.yml" {
+resource "local_file" "docker-coompose" {
   filename = "${path.module}/docker-compose.yml"
   content  = <<-EOF
     services:
@@ -251,7 +251,7 @@ resource "local_file" "docker-coompose.yml" {
 }
 
 #ENVIA ARQUIVO DOCKER-COMPOSE.YML PARA O BUCKET S3
-resource "aws_s3_object" "docker-compose.yml" {
+resource "aws_s3_object" "docker-compose" {
   bucket = var.bucket  
   key    = "docker-compose.yml" 
   source = "./docker-compose.yml" 
