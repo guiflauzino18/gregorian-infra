@@ -204,7 +204,7 @@ resource "aws_lb_target_group" "this" {
 }
 
 #LISTENER - O que o Load Balancer ficará escutando para encaminhar para o grupo target
-resource "aws_lb_listener" "this" {
+resource "aws_lb_listener" "Https" {
   load_balancer_arn = aws_lb.this.arn
   port = "443"
   protocol = "HTTP"
@@ -412,7 +412,7 @@ resource "aws_autoscaling_policy" "up" {
   autoscaling_group_name = aws_autoscaling_group.this.name
   adjustment_type = "ChangeInCapacity"
   scaling_adjustment = "1" # Incrementa em uma máquina
-  cooldown = "300"
+  cooldown = "300" #aguarda 300 segundos antes de aplicar novamente uma política
   policy_type = "SimpleScaling"
 }
 
@@ -420,7 +420,7 @@ resource "aws_autoscaling_policy" "down" {
   name = "gregorian-autoscaling-down"
   autoscaling_group_name = aws_autoscaling_group.this.name
   adjustment_type = "ChangeInCapacity"
-  scaling_adjustment = "-1" # Incrementa em uma máquina
-  cooldown = "300"
+  scaling_adjustment = "-1" # Decrementa em uma máquina
+  cooldown = "300" #aguarda 300 segundos antes de aplicar novamente uma política
   policy_type = "SimpleScaling"
 }

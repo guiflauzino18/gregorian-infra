@@ -47,7 +47,7 @@ jobs:
             - name: Terraform Init #Entra na pasta dev ou prod de acordo com a o valor da variavel passada e executa terraform init 
               run: cd infra/env/${{inputs.environment}} && terraform init 
                   -backend-config="bucket=${{inputs.aws-bucket-statefile}}"  
-                  -backend-config="key=${{inputs.environment}}/${{github.event.repository.name}}"
+                  -backend-config="key=statefile/${{inputs.environment}}/${{github.event.repository.name}}"
                   -backend-config="region=${{inputs.aws-region}}"
 
             - name: Terraform Validate # Executa terraform validate
