@@ -7,14 +7,14 @@ on:
 
 permissions:
     id-token: write
-    contents: read
+    contents: write
 
 jobs:
     terraform:
         uses: ./.github/workflows/terraform.yml
         with:
             environment: prod
-            # aws-assume-tole-arn: "${secrets.AWS_ROLE_ARN}}"
-            # aws-region: "${secrets.AWS_REGION}}"
+            # aws-assume-tole-arn: "${{}}"
+            # aws-region: "us-east-2"
             # aws-bucket-statefile: "${secrets.AWS_BUCKET}}"
             destroy: false
