@@ -228,23 +228,25 @@ resource "aws_lb_listener" "TomCat8080" {
 ###########AUTO SCALING
 #CRIA  ARQUIVO DOCKER COMPOSE
 resource "local_file" "docker-coompose.yml" {
-  filename = "${path.module}/docker-coompose.yml"
+  filename = "${path.module}/docker-compose.yml"
   content  = <<-EOF
     services:
     megasocial-app:
-    image: 719836617769.dkr.ecr.us-east-2.amazonaws.com/megasocial-app:latest
-    container_name: megasocial-app
+    image: 719836617769.dkr.ecr.us-east-2.amazonaws.com/gregorian-api:latest
+    container_name: gregorian-api
     restart: always
     environment: 
       - MYSQL_IP=${aws_db_instance.this.address}
+      - MYSQL_USERNAME=${var.rds-db-username}
+      - MYSQL_PASSWORD=${var.rds-db-password}
     ports: 
       - 8080:8080
     network_mode: "host"
     volumes:
-      - vol-megasocial:/megasocial
+      - vol-gregorian-api:/gregorian
 
    volumes:
-    vol-megasocial:
+    vol-gregorian-api
   EOF
 }
 
