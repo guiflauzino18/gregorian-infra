@@ -1,3 +1,4 @@
+#Definição das variáveis e seus tipos
 variable "tags" {
   type = map(string)
 }
@@ -40,27 +41,73 @@ variable "ssh-src-cidr" {
 
 
 #EC2
-variable "aws-key-name" {}
-variable "aws-public-key" {}
+variable "aws-key-name" {
+  type = string
+}
+variable "aws-public-key" {
+  type = string
+}
 
 #RDS
-variable "rds-allocated-storage" {}
-variable "rds-max-allocated-storage" {}
-variable "rds-engine" {}
-variable "rds-engine-version" {}
-variable "rds-instance-class" {}
-variable "rds-db-name" {}
-variable "rds-db-username" {}
-variable "rds-db-password" {}
-variable "rds-skip-final-snapshot" {}
-variable "rds-multi-az" {}
-variable "rds-publicly-acessible" {}
+variable "rds-allocated-storage" {
+  type = number
+}
+variable "rds-max-allocated-storage" {
+  type = number
+}
+variable "rds-engine" {
+  type = string
+}
+variable "rds-engine-version" {
+  type = string
+}
+variable "rds-instance-class" {
+  type = string
+}
+variable "rds-db-name" {
+  type = string
+}
+variable "rds-db-username" {
+  type = string
+}
+variable "rds-db-password" {
+  type = string
+}
+variable "rds-skip-final-snapshot" {
+  type = bool
+}
+variable "rds-multi-az" {
+  type = bool
+}
+variable "rds-publicly-acessible" {
+  type = bool
+}
 
 #AUTO SCALING
-variable "as-name" {}
-variable "max-size" {}
-variable "min-size" {}
-variable "desired-capacity" {}
-variable "asg-health-check-type" {}
-variable "image-id" {}
-variable "as-instance-type" {}
+variable "max-size" {
+  type = number
+}
+variable "min-size" {
+  type = number
+}
+variable "desired-capacity" {
+  type = number
+}
+variable "asg-health-check-type" {
+  type = string
+}
+variable "image-id" {
+  type = string
+}
+variable "as-instance-type" {
+  type = string
+}
+
+#S3
+variable "bucket" {
+  type = string
+}
+
+variable "aws-acount-id" {
+  type = string
+}

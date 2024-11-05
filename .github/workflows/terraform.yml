@@ -1,5 +1,6 @@
 name: "Deploy Infra Gregorian"
 
+# Variáveis necessárias para execução.
 on:
     workflow_call:
         inputs:
@@ -15,41 +16,41 @@ on:
             aws-bucket-statefile: # Nome do Bucket que guardará o statefile do terraform
                 type: string
                 required: true
-            destroy:
+            destroy: # Variavel quando quisermos fazer o destroy
                 type: boolean
                 required: true
 
-
+#Jobs que serão executadas
 jobs:
     terraform:
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-latest #SO que será usado para execução
         defaults:
             run:
-                shell: bash
+              shell: bash
 
         steps:
-            - name: Checkout Code
+            - name: Checkout Code #Checa o código
               uses: actions/checkout@v4
 
-            - name: Setup Terraform
+            - name: Setup Terraform # Instala Terraform
               uses: hashicorp/setup-terraform@v3
               with:
                 terraform_version: 1.9.8
 
-            - name: Configure AWS Credentials
+            - name: Configure AWS Credentials #Configura conexão com AWS
               uses: aws-actions/configure-aws-credentials@v4
               with:
                     role-to-assume: ${{inputs.aws-assume-tole-arn}}
                     role-session-name: GitHub_Actions_Deploy_Gregorian_Infra
                     aws-region: ${{inputs.aws-region}}
 
-            - name: Terraform Init
+            - name: Terraform Init #Entra na pasta dev ou prod de acordo com a o valor da variavel passada e executa terraform init 
               run: cd infra/env/${{inputs.environment}} && terraform init 
                   -backend-config="bucket=${{inputs.aws-bucket-statefile}}"  
-                  -backend-config="key=${{github.event.repository.name}}" 
-                  -backend-config="region=${{inputs.aws-region}}" 
+                  -backend-config="key=${{inputs.environment}}/${{github.event.repository.name}}"
+                  -backend-config="region=${{inputs.aws-region}}"
 
-            - name: Terraform Validate
+            - name: Terraform Validate # Executa terraform validate
               run: terraform validate
 
               #Se destroy for true executa terraform destroy
@@ -59,10 +60,11 @@ jobs:
               run: cd infra/env/${{inputs.environment}} &&
                 terraform destroy -var-file="./terraform.tfvars" -auto-approve
 
-            - name: Terraform Plan
+            - name: Terraform Plan #Executa terraform plan se destroy != true
               if: inputs.destroy != true
               run: cd infra/env/${{inputs.environment}} &&
-                terraform plan -var-file="./terraform.tfvars" -out=${{inputs.environment}}.plan
+                terraform plan -var-file="./terraform.tfvars" -var="aws-acount-id=${{secrets.AWS_ACCOUNT_ID}}" -var="rds-db-name=${{secrets.DB_NAME}}" -var="rds-db-username=${{secrets.DB_USERNAME}}" -var="rds-db-password=${{secrets.DB_PASSWORD}}" -var="bucket=${{secrets.AWS_BUCKET}}" -out=${{inputs.environment}}.plan
+                #secrets são definidas no github
 
             - name: Terraform Apply
               if: inputs.destroy != true

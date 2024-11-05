@@ -17,7 +17,13 @@ sudo apt-get update
 
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
-#Instala GitHub Agent
+# Loga docker no ECR
 
 #Instala Mysql Client
 sudo apt install -y mysql-client-core-8.0
+
+#Configura Docker Compose
+mkdir /gregorian
+cd /gregorian
+aws s3 cp s3://s3.gregorian/docker-compose.yml .
+docker compose up -d

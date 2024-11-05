@@ -1,3 +1,4 @@
+#Valores das variaveis usadas no terraform
 tags = {
     project = "Gregorian"
     environment = "prod"
@@ -26,15 +27,15 @@ rds-max-allocated-storage = 15
 rds-engine = "mysql"
 rds-engine-version = "8.0"
 rds-instance-class = "db.t3.micro"
-rds-db-name = "gregorian"
-rds-db-username = "root"
-rds-db-password = "Gmn!0213"
+rds-db-name = "<nome>"
+rds-db-username = "<user>"
+rds-db-password = "<senha>"
 rds-skip-final-snapshot = true
 rds-multi-az = true
 rds-publicly-acessible = false
 
+
 #AUTOSCALING E LOADBALANCER
-as-name = "GregorianAutosacling"
 max-size = 5
 min-size = 1
 desired-capacity = 2
