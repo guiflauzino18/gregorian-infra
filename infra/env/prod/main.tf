@@ -259,7 +259,7 @@ resource "aws_s3_object" "docker-compose" {
 }
 
 #CRIA ARQUIVO USERDATA.SH
-resource "local_file" "userData.sh" {
+resource "local_file" "userData" {
   filename = "${path.module}/userData.sh"
   content = <<-EOF
     #!/bin/bash
