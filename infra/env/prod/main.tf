@@ -372,6 +372,7 @@ resource "aws_launch_template" "this" {
   iam_instance_profile {
     arn = aws_iam_instance_profile.this.arn
   }
+  depends_on = [ local_file.userData ]
 }
 
 #AUTOSCALING GROUP
