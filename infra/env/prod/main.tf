@@ -362,7 +362,7 @@ resource "aws_launch_template" "this" {
   image_id = var.image-id
   instance_type = var.as-instance-type
   key_name = var.aws-key-name
-  user_data = filebase64("${path.module}/userData.sh")
+  user_data = local_file.userData.content_base64
   update_default_version = true
   tags = merge({"Resource" = "gregorian-template"}, var.tags)
   network_interfaces {
@@ -372,7 +372,6 @@ resource "aws_launch_template" "this" {
   iam_instance_profile {
     arn = aws_iam_instance_profile.this.arn
   }
-  depends_on = [ local_file.userData ]
 }
 
 #AUTOSCALING GROUP
