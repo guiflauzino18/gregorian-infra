@@ -233,22 +233,22 @@ resource "local_file" "docker-coompose" {
   filename = "${path.module}/docker-compose.yml"
   content  = <<-EOF
   services:
-    megasocial-app:
+   gregorian-api:
     image: 719836617769.dkr.ecr.us-east-2.amazonaws.com/gregorian-api:latest
     container_name: gregorian-api
     restart: always
-    environment: 
-    - MYSQL_IP=${aws_db_instance.this.address}
-    - MYSQL_USERNAME=${var.rds-db-username}
-    - MYSQL_PASSWORD=${var.rds-db-password}
-    ports: 
-      - 8080:8080
+    environment:
+     - MYSQL_IP=terraform-20241108195030760400000004.caomescwphyb.us-east-2.rds.amazonaws.com
+     - MYSQL_USERNAME=gregorian
+     - MYSQL_PASSWORD=Gmn!0213
+    ports:
+     - 8080:8080
     network_mode: "host"
     volumes:
-      - vol-gregorian-api:/gregorian
+     - vol-gregorian-api:/gregorian
 
-  volumes:
-   vol-gregorian-api
+volumes:
+ vol-gregorian-api:
   EOF
   depends_on = [ aws_db_instance.this ]
 }
@@ -285,9 +285,6 @@ resource "local_file" "userData" {
 
     sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
-    # Loga docker no ECR
-    aws ecr get-login-password --region ${var.aws-region} | docker login --username AWS --password-stdin ${var.aws-acount-id}.dkr.ecr.${var.aws-region}.amazonaws.com
-
     #Instala Mysql Client
     sudo apt install -y mysql-client-core-8.0
 
@@ -297,6 +294,9 @@ resource "local_file" "userData" {
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
     unzip awscliv2.zip
     sudo ./aws/install
+
+    # Loga docker no ECR
+    aws ecr get-login-password --region ${var.aws-region} | docker login --username AWS --password-stdin ${var.aws-acount-id}.dkr.ecr.${var.aws-region}.amazonaws.com
 
     #Configura Docker Compose
     mkdir /gregorian
@@ -347,6 +347,24 @@ resource "aws_iam_policy" "ec2-access-s3-policy" {
         Action   = ["s3:GetObject"]
         Effect   = "Allow"
         Resource = "arn:aws:s3:::s3.gregorian/*"
+      }
+    ]
+  })
+}
+
+#POLÍTICA PARA ACESSAR O ECR
+resource "aws_iam_policy" "ec2-access-s3-policy" {
+  name        = "ec2-access-ecr-policy"
+  description = "Permissão para acessar o ecr"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        "Sid": "Ecr",
+        "Effect": "Allow",
+        "Action": "ecr:*",
+        "Resource": "*"
       }
     ]
   })
