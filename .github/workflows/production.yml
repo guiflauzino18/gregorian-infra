@@ -17,6 +17,6 @@ jobs:
             aws-assume-role-arn: "arn:aws:iam::719836617769:role/GitHub_Actions"
             aws-region: "us-east-2"
             aws-bucket-statefile: "s3.gregorian"
-            destroy: false
+            destroy: true
         secrets: inherit #Para repassar os secrets em um "reusing workflows"
             

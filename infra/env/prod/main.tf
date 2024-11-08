@@ -232,24 +232,24 @@ resource "aws_lb_listener" "TomCat8080" {
 resource "local_file" "docker-coompose" {
   filename = "${path.module}/docker-compose.yml"
   content  = <<-EOF
-  services:
-   gregorian-api:
-    image: 719836617769.dkr.ecr.us-east-2.amazonaws.com/gregorian-api:latest
-    container_name: gregorian-api
-    restart: always
-    environment:
-     - MYSQL_IP=terraform-20241108195030760400000004.caomescwphyb.us-east-2.rds.amazonaws.com
-     - MYSQL_USERNAME=gregorian
-     - MYSQL_PASSWORD=Gmn!0213
-    ports:
-     - 8080:8080
-    network_mode: "host"
-    volumes:
-     - vol-gregorian-api:/gregorian
+services:
+ gregorian-api:
+  image: ${var.aws-acount-id}.dkr.ecr.${var.aws-region}.amazonaws.com/gregorian-api:latest
+  container_name: gregorian-api
+  restart: always
+  environment:
+   - MYSQL_IP=${aws_db_instance.this.address}
+   - MYSQL_USERNAME=${var.rds-db-username}
+   - MYSQL_PASSWORD=${var.rds-db-password}
+  ports:
+   - 8080:8080
+  network_mode: "host"
+  volumes:
+   - vol-gregorian-api:/gregorian
 
 volumes:
  vol-gregorian-api:
-  EOF
+EOF
   depends_on = [ aws_db_instance.this ]
 }
 
@@ -266,43 +266,43 @@ resource "aws_s3_object" "docker-compose" {
 resource "local_file" "userData" {
   filename = "${path.module}/userData.sh"
   content = <<-EOF
-    #!/bin/bash
+#!/bin/bash
 
-    #Instala Docker
-    # Add Docker's official GPG key:
-    sudo apt-get update
-    sudo apt-get install -y ca-certificates curl
-    sudo install -m 0755 -d /etc/apt/keyrings
-    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-    sudo chmod a+r /etc/apt/keyrings/docker.asc
+#Instala Docker
+# Add Docker's official GPG key:
+sudo apt-get update
+sudo apt-get install -y ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
 
-    # Add the repository to Apt sources:
-    echo \
-      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-      $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-      sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-    sudo apt-get update
+# Add the repository to Apt sources:
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
 
-    sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
-    #Instala Mysql Client
-    sudo apt install -y mysql-client-core-8.0
+#Instala Mysql Client
+sudo apt install -y mysql-client-core-8.0
 
-    #instala aws cli
-    cd /tmp
-    apt install -y unzip
-    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-    unzip awscliv2.zip
-    sudo ./aws/install
+#instala aws cli
+cd /tmp
+apt install -y unzip
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
 
-    # Loga docker no ECR
-    aws ecr get-login-password --region ${var.aws-region} | docker login --username AWS --password-stdin ${var.aws-acount-id}.dkr.ecr.${var.aws-region}.amazonaws.com
+# Loga docker no ECR
+aws ecr get-login-password --region ${var.aws-region} | docker login --username AWS --password-stdin ${var.aws-acount-id}.dkr.ecr.${var.aws-region}.amazonaws.com
 
-    #Configura Docker Compose
-    mkdir /gregorian
-    cd /gregorian
-    aws s3 cp s3://s3.gregorian/docker-compose.yml .
-    docker compose up -d
+#Configura Docker Compose
+mkdir /gregorian
+cd /gregorian
+aws s3 cp s3://s3.gregorian/docker-compose.yml .
+docker compose up -d
   EOF
 }
 
