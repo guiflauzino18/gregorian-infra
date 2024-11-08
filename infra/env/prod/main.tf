@@ -292,7 +292,11 @@ resource "local_file" "userData" {
     sudo apt install -y mysql-client-core-8.0
 
     #instala aws cli
-    sudo apt install -y awscli
+    cd /tmp
+    apt install -y unzip
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    unzip awscliv2.zip
+    sudo ./aws/install
 
     #Configura Docker Compose
     mkdir /gregorian
@@ -309,6 +313,7 @@ resource "aws_s3_object" "usedataToS3" {
   source = "./userData.sh" 
   acl    = "private"
   depends_on = [ local_file.userData ]
+  
 }
 
 #POLÍTICAS EC2 PARA ACESSO AO BUCKET S3
