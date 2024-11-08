@@ -291,6 +291,9 @@ resource "local_file" "userData" {
     #Instala Mysql Client
     sudo apt install -y mysql-client-core-8.0
 
+    #instala aws cli
+    sudo apt install -y awscli
+
     #Configura Docker Compose
     mkdir /gregorian
     cd /gregorian
@@ -373,6 +376,7 @@ resource "aws_launch_template" "this" {
     arn = aws_iam_instance_profile.this.arn
   }
 }
+
 
 #AUTOSCALING GROUP
 resource "aws_autoscaling_group" "this" {
