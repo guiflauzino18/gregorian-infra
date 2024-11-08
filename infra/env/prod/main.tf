@@ -353,7 +353,7 @@ resource "aws_iam_policy" "ec2-access-s3-policy" {
 }
 
 #POLÍTICA PARA ACESSAR O ECR
-resource "aws_iam_policy" "ec2-access-s3-policy" {
+resource "aws_iam_policy" "ec2-access-ecr-policy" {
   name        = "ec2-access-ecr-policy"
   description = "Permissão para acessar o ecr"
 
