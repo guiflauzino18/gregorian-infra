@@ -371,6 +371,11 @@ resource "aws_iam_policy" "ec2-access-ecr-policy" {
 }
 
 #ANEXA A POLÍTICA ACIMA À ROLE
+resource "aws_iam_role_policy_attachment" "ecr_access_attachment" {
+  role       = aws_iam_role.role-ec2-access-s3.name
+  policy_arn = aws_iam_policy.ec2-access-ecr-policy.arn
+}
+#ANEXA A POLÍTICA ACIMA À ROLE
 resource "aws_iam_role_policy_attachment" "s3_access_attachment" {
   role       = aws_iam_role.role-ec2-access-s3.name
   policy_arn = aws_iam_policy.ec2-access-s3-policy.arn
