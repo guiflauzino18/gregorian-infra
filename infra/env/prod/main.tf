@@ -239,14 +239,14 @@ services:
   restart: always
   environment:
    - MYSQL_IP=${aws_db_instance.this.address}
-   - MYSQL_USERNAME=${var.rds-db-username}
-   - MYSQL_PASSWORD=${var.rds-db-password}
-   - JWT_SECRET=${var.jwt-secret}
+   - MYSQL_USERNAME="${var.rds-db-username}"
+   - MYSQL_PASSWORD="${var.rds-db-password}"
+   - JWT_SECRET="${var.jwt-secret}"
   ports:
    - 8080:8080
   network_mode: "host"
   volumes:
-   - vol-gregorian-api:/gregorian
+   - vol-gregorian:/gregorian
 
 volumes:
  vol-gregorian:
