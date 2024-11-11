@@ -14,9 +14,6 @@ jobs:
         uses: ./.github/workflows/terraform.yml
         with:
             environment: prod
-            aws-assume-role-arn: "arn:aws:iam::719836617769:role/GitHub_Actions"
-            aws-region: "us-east-2"
-            aws-bucket-statefile: "s3.gregorian"
             destroy: false
         secrets: inherit #Para repassar os secrets em um "reusing workflows"
             

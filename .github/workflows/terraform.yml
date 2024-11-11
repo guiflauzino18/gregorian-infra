@@ -4,6 +4,7 @@ name: "Deploy Infra Gregorian"
 on:
     workflow_call:
         inputs:
+            #OBS: POr questões de segurança, o uso de algumas variáveis foram subtituídas por secrets do GitHub Actions
             environment: #Variavel que define o tipo de ambiente. OBS o valor deve ser dev prod ou nome e outra pasta que estiver dentro de /infra
                 type: string
                 required: true
@@ -77,6 +78,8 @@ jobs:
                 -var="rds-db-username=${{secrets.DB_USERNAME}}"
                 -var="rds-db-password=${{secrets.DB_PASSWORD}}" 
                 -var="bucket=${{inputs.aws-bucket-statefile}}"
+                -replace="aws_s3_object.docker-compose"
+                -replace="aws_s3_object.usedataToS3"
                 -out=${{inputs.environment}}.plan 
                 #secrets são definidas no github
 
