@@ -158,7 +158,7 @@ resource "aws_vpc_security_group_ingress_rule" "allowHttpIn" {
 }
 
 #PERMITE TODO TRÁFEGO DE SAÍDA
-resource "aws_vpc_security_group_egress_rule" "AllowAllEgress" {
+resource "aws_vpc_security_group_egress_rule" "AllowAllEgressLB" {
   security_group_id = aws_security_group.SGForLoadBalancer.id
   cidr_ipv4 = "0.0.0.0/0"
   ip_protocol = "-1" #Todas as portas
