@@ -107,6 +107,15 @@ resource "aws_vpc_security_group_ingress_rule" "allowAllFromVPCCidr" {
   ip_protocol = "-1"
 }
 
+#Permite entrada de tráfego na porta 8080 vindo dos hosts do Security Group do Load Balancer
+resource "aws_vpc_security_group_ingress_rule" "allow8080FromELB" {
+  security_group_id = aws_security_group.SGForInstances.id
+  ip_protocol = "tcp"
+  from_port = 8080
+  to_port = 8080
+  referenced_security_group_id = aws_security_group.SGForLoadBalancer.id
+}
+
 resource "aws_vpc_security_group_ingress_rule" "AllowSSH" {
   count = length(var.ssh-src-cidr)
   security_group_id = aws_security_group.SGForInstances.id
@@ -212,6 +221,7 @@ resource "aws_lb" "this" {
   security_groups = [aws_security_group.SGForLoadBalancer.id]
   subnets = [ aws_subnet.subnet_a.id,aws_subnet.subnet_b.id, aws_subnet.subnet_c.id ]
   enable_deletion_protection = false
+  
   tags = var.tags
 }
 
@@ -224,8 +234,14 @@ resource "aws_lb_target_group" "this" {
   protocol = "HTTP"
   vpc_id = aws_vpc.this.id
   tags = merge({"name" = "tg-gregorian",}, var.tags)
-  
-  
+  health_check {
+    path = "/api/check"
+    interval = 30
+    timeout = 5
+    healthy_threshold = 3
+    unhealthy_threshold = 2
+    matcher = 200
+  }
 }
 
 
@@ -432,9 +448,9 @@ resource "aws_launch_template" "this" {
   image_id = var.image-id
   instance_type = var.as-instance-type
   key_name = var.aws-key-name
-  user_data = "${local_file.userData.content_base64}"
   update_default_version = true
   tags = merge({"Resource" = "gregorian-template"}, var.tags)
+  user_data = "${base64encode(local_file.userData.content)}"
   network_interfaces {
     security_groups = [aws_security_group.SGForInstances.id]
     associate_public_ip_address = true
