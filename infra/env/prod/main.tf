@@ -224,7 +224,10 @@ resource "aws_lb_target_group" "this" {
   protocol = "HTTP"
   vpc_id = aws_vpc.this.id
   tags = merge({"name" = "tg-gregorian",}, var.tags)
+  
+  
 }
+
 
 #LISTENER - O que o Load Balancer ficará escutando para encaminhar para o grupo target
 resource "aws_lb_listener" "Https" {
