@@ -38,7 +38,9 @@ rds-publicly-acessible = false
 #AUTOSCALING E LOADBALANCER
 max-size = 5
 min-size = 1
-desired-capacity = 2
+desired-capacity = 1 #Quantidade desejada de instancias
 asg-health-check-type = "ELB"
 image-id = "ami-0ea3c35c5c3284d82"
 as-instance-type = "t2.small"
+
+jwt-secret="gregorian-api!*"

@@ -241,6 +241,7 @@ services:
    - MYSQL_IP=${aws_db_instance.this.address}
    - MYSQL_USERNAME=${var.rds-db-username}
    - MYSQL_PASSWORD=${var.rds-db-password}
+   - JWT_SECRET=${var.jwt-secret}
   ports:
    - 8080:8080
   network_mode: "host"
@@ -248,7 +249,7 @@ services:
    - vol-gregorian-api:/gregorian
 
 volumes:
- vol-gregorian-api:
+ vol-gregorian:
 EOF
   depends_on = [ aws_db_instance.this ]
 }
@@ -316,6 +317,7 @@ resource "aws_s3_object" "usedataToS3" {
   
 }
 
+
 #POLÍTICAS EC2 PARA ACESSO AO BUCKET S3
 #ROLE PERMITNDO EC2 ASSUMIR ESTA ROLE
 resource "aws_iam_role" "role-ec2-access-s3" {
@@ -375,7 +377,7 @@ resource "aws_iam_role_policy_attachment" "ecr_access_attachment" {
   role       = aws_iam_role.role-ec2-access-s3.name
   policy_arn = aws_iam_policy.ec2-access-ecr-policy.arn
 }
-#ANEXA A POLÍTICA ACIMA À ROLE
+
 resource "aws_iam_role_policy_attachment" "s3_access_attachment" {
   role       = aws_iam_role.role-ec2-access-s3.name
   policy_arn = aws_iam_policy.ec2-access-s3-policy.arn
@@ -393,7 +395,7 @@ resource "aws_launch_template" "this" {
   image_id = var.image-id
   instance_type = var.as-instance-type
   key_name = var.aws-key-name
-  user_data = local_file.userData.content_base64
+  user_data = "${local_file.userData.content_base64}"
   update_default_version = true
   tags = merge({"Resource" = "gregorian-template"}, var.tags)
   network_interfaces {

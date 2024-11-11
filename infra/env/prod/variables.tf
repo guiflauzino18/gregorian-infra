@@ -111,3 +111,7 @@ variable "bucket" {
 variable "aws-acount-id" {
   type = string
 }
+
+variable "jwt-secret" {
+  type = string
+}
