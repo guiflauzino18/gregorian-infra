@@ -190,7 +190,7 @@ resource "aws_db_parameter_group" "this" {
   
   parameter {
     name = "skip_name_resolve"
-    value = 1
+    value = true
   }
 }
 
