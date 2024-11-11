@@ -124,7 +124,7 @@ resource "aws_vpc_security_group_egress_rule" "AllowAllEgress" {
 }
 
 ###################LOAD BALANCER POLICY
-resource "aws_vpc_security_group_ingress_rule" "allowHttpIn" {
+resource "aws_vpc_security_group_ingress_rule" "allowHttpsIn" {
   security_group_id = aws_security_group.SGForLoadBalancer.id
   cidr_ipv4 = "0.0.0.0/0"
   from_port = 443
@@ -138,6 +138,14 @@ resource "aws_vpc_security_group_ingress_rule" "allowTomcatIn" {
   from_port = 8080
   ip_protocol = "tcp"
   to_port = "8080"
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allowHttpIn" {
+  security_group_id = aws_security_group.SGForLoadBalancer.id
+  cidr_ipv4 = "0.0.0.0/0"
+  from_port = 80
+  ip_protocol = "tcp"
+  to_port = "80"
 }
 
 #################### RDS POLICY
@@ -183,6 +191,7 @@ resource "aws_db_subnet_group" "this" {
   subnet_ids = [aws_subnet.subnet_a.id, aws_subnet.subnet_b.id, aws_subnet.subnet_c.id]
 }
 
+#Parameter Group para configurar skip_name_resolve para true. Evita erro de Cannot resolve dns name no RDS
 resource "aws_db_parameter_group" "this" {
   family = "mysql8.0"
   description = "Parameter Group For RDS Instance"
@@ -229,6 +238,17 @@ resource "aws_lb_listener" "Https" {
   depends_on = [ aws_lb_target_group.this ]
 }
 
+resource "aws_lb_listener" "Http" {
+  load_balancer_arn = aws_lb.this.arn
+  port = "80"
+  protocol = "HTTP"
+  default_action {
+    type = "forward"
+    target_group_arn = aws_lb_target_group.this.arn
+  }
+  depends_on = [ aws_lb_target_group.this ]
+}
+
 resource "aws_lb_listener" "TomCat8080" {
   load_balancer_arn = aws_lb.this.arn
   port = "8080"
@@ -253,9 +273,9 @@ services:
   restart: always
   environment:
    - MYSQL_IP=${aws_db_instance.this.address}
-   - MYSQL_USERNAME="${var.rds-db-username}"
-   - MYSQL_PASSWORD="${var.rds-db-password}"
-   - JWT_SECRET="${var.jwt-secret}"
+   - MYSQL_USERNAME=${var.rds-db-username}
+   - MYSQL_PASSWORD=${var.rds-db-password}
+   - JWT_SECRET=${var.jwt-secret}
   ports:
    - 8080:8080
   network_mode: "host"
