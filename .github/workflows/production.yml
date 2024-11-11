@@ -14,6 +14,6 @@ jobs:
         uses: ./.github/workflows/terraform.yml
         with:
             environment: prod
-            destroy: false
+            destroy: true
         secrets: inherit #Para repassar os secrets em um "reusing workflows"
             
