@@ -175,7 +175,7 @@ resource "aws_db_instance" "this" {
   vpc_security_group_ids = [aws_security_group.SGForInstances.id,aws_security_group.SGForRDS.id]
   tags = var.tags
   parameter_group_name = aws_db_parameter_group.this.name
-  apply_immediately = true
+  #apply_immediately = true
 }
 
 resource "aws_db_subnet_group" "this" {
