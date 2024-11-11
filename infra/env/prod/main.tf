@@ -174,11 +174,23 @@ resource "aws_db_instance" "this" {
   db_subnet_group_name = aws_db_subnet_group.this.name
   vpc_security_group_ids = [aws_security_group.SGForInstances.id,aws_security_group.SGForRDS.id]
   tags = var.tags
+  parameter_group_name = aws_db_parameter_group.this.name
 }
 
 resource "aws_db_subnet_group" "this" {
   name = "gregorian-subnets"
   subnet_ids = [aws_subnet.subnet_a.id, aws_subnet.subnet_b.id, aws_subnet.subnet_c.id]
+}
+
+resource "aws_db_parameter_group" "this" {
+  family = "mysql8.0"
+  description = "Parameter Group For RDS Instance"
+  name = "rds-parameter-group"
+  
+  parameter {
+    name = "skip_name_resolve"
+    value = 1
+  }
 }
 
 ###################LOAD BALANCER
