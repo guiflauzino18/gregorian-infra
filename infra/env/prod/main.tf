@@ -482,18 +482,18 @@ resource "aws_autoscaling_group" "this" {
   target_group_arns = [ aws_lb_target_group.this.arn ]
   launch_template {
     id = aws_launch_template.this.id
-    version = aws_launch_template.this.latest_version
-    
+    version = aws_launch_template.this.latest_version   
   }
   depends_on = [ aws_s3_object.docker-compose ]
+  
 }
 
 #ATTACH INSTANCES TO TARGET GROUP
 #pegar todas as instancias criadas pelo auto scaling
 data "aws_instances" "this" {
   filter {
-    name = "tag:Resource"
-    values = ["gregorian-template"]
+    name = "tag:aws:autoscaling:groupName"
+    values = ["gregorian-autoScaling-group"]
   }
 }
 
