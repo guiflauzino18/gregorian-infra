@@ -233,7 +233,7 @@ resource "aws_lb" "this" {
 }
 
 #TARGET GROUP - Target Group é o grupo de destino para onde as requisições serão feitas.
-#Esse Target Group será usado também no autoscalink
+#Esse Target Group será usado também no autoscaling
 resource "aws_lb_target_group" "this" {
   name = "tg-gregorian"
   target_type = "instance" #Instance quando usado junto cm autoscaling
@@ -363,8 +363,9 @@ aws ecr get-login-password --region ${var.aws-region} | docker login --username 
 mkdir /gregorian
 cd /gregorian
 aws s3 cp s3://s3.gregorian/docker-compose.yml .
+docker compose pull
 docker compose up -d
-  EOF
+EOF
 }
 
 #ENVIA ARQUIVO USERDATA.SH PARA O BUCKET S3
